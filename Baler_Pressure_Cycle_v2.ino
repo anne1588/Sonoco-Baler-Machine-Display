@@ -127,17 +127,17 @@ static void drawMachine(){
   hopperFill = rectangle(p, 121, 67, 0, 4, 0x24D83E);
 
   /* Chamber */
-  rectangle(p, 28, 84, 220, 50, 0xD5E7EE, true);
+  rectangle(p, 42, 84, 220, 50, 0xD5E7EE, true);
 
   /* Door (left side, opens upward) */
-  door = rectangle(p, 30, 85, 10, 48, 0x24D83E);
+  door = rectangle(p, 44, 85, 10, 48, 0x24D83E);
   lv_obj_set_style_radius(door, 2, 0);
 
   /* Plunger indicator area background */
-  rectangle(p, 42, 86, 204, 46, 0x263743);
+  rectangle(p, 56, 86, 204, 46, 0x263743);
 
   /* Plunger indicator (right -> left) */
-  blue = rectangle(p, 246, 86, 0, 46, 0x7EC8EE);
+  blue = rectangle(p, 260, 86, 0, 46, 0x7EC8EE);
   lv_obj_set_style_radius(blue, 2, 0);
 
   /* Optional small labels */
@@ -150,12 +150,12 @@ static void drawMachine(){
 
   lbl = lv_label_create(p);
   lv_label_set_text(lbl, "DOOR");
-  lv_obj_set_pos(lbl, 24, 136);
+  lv_obj_set_pos(lbl, 38, 136);
   lv_obj_set_style_text_color(lbl, lv_color_hex(0xBFD4DD), 0);
 
   lbl = lv_label_create(p);
   lv_label_set_text(lbl, "PLUNGER");
-  lv_obj_set_pos(lbl, 176, 136);
+  lv_obj_set_pos(lbl, 190, 136);
   lv_obj_set_style_text_color(lbl, lv_color_hex(0xBFD4DD), 0);
 }
 static void machineUpdate(){
@@ -172,7 +172,7 @@ static void machineUpdate(){
 
   if(sw > 0){
     lv_obj_clear_flag(blue, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_set_x(blue, 246 - sw);
+    lv_obj_set_x(blue, 260 - sw);
     lv_obj_set_width(blue, sw);
   } else {
     lv_obj_add_flag(blue, LV_OBJ_FLAG_HIDDEN);
