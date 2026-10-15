@@ -62,7 +62,6 @@ static void machineUpdate();
 static void drawMachine();
 static Phase phase=READY;
 static lv_obj_t *scr,*processLabel,*instructionLabel,*statusLabel,*draw,*waste,*blue,*door;
-static lv_obj_t *startBtn,*doorBtn,*closedBtn,*startTxt;
 static lv_timer_t *simTimer;
 static uint32_t phaseAt;
 static int hopper=0,stroke=0,wastePct=0,pressure=0,cycleCount=0;
@@ -280,46 +279,7 @@ static void render(){
   else
     lv_obj_set_style_text_color(statusLabel, lv_color_hex(0xD7E3EA), 0);
 
-  bool start = (phase == READY || phase == DISCHARGE_FEED);
-  bool open  = (phase == WAIT_DOOR_OPEN);
-  bool close = (phase == DISCHARGE_FEED && stroke == 0);
-
-  if(start) lv_obj_clear_state(startBtn, LV_STATE_DISABLED);
-  else      lv_obj_add_state(startBtn, LV_STATE_DISABLED);
-
-  if(open)  lv_obj_clear_state(doorBtn, LV_STATE_DISABLED);
-  else      lv_obj_add_state(doorBtn, LV_STATE_DISABLED);
-
-  if(close) lv_obj_clear_state(closedBtn, LV_STATE_DISABLED);
-  else      lv_obj_add_state(closedBtn, LV_STATE_DISABLED);
-
-  lv_label_set_text(startTxt, dischargeMode ? "START DISCHARGE\nFEED" : "START\nCONVEYOR");
-  lv_obj_center(startTxt);
-
   machineUpdate();
-}
-static void eventStart(lv_event_t *e){
-  (void)e;
-  if(phase==READY||phase==DISCHARGE_FEED){
-    hopper=0;transition(FEEDING);
-    render();
-    }
- }
-static void eventDoor(lv_event_t *e){
-  (void)e;
-  if(phase==WAIT_DOOR_OPEN && stroke==0){
-    lv_obj_set_y(door,37);
-    dischargeMode=true;
-    transition(DISCHARGE_FEED);
-    render();
-    }
-}
-static void eventClose(lv_event_t *e){(void)e;if(phase==DISCHARGE_FEED && stroke==0){lv_obj_set_y(door,85);pressure=0;wastePct=0;hopper=0;stroke=0;cycleCount=0;dischargeMode=false;transition(READY);render();}}
-static lv_obj_t *button(int x,int y,int w,const char *s,lv_event_cb_t cb,lv_obj_t **out){
-  lv_obj_t *b=lv_btn_create(scr);lv_obj_set_pos(b,x,y);lv_obj_set_size(b,w,51);
-  lv_obj_set_style_radius(b,5,0);lv_obj_set_style_bg_color(b,lv_color_hex(0x266990),0);
-  lv_obj_t *l=caption(b,0,0,w-10,s);lv_obj_center(l);if(out)*out=l;
-  lv_obj_add_event_cb(b,cb,LV_EVENT_CLICKED,NULL);return b;
 }
 static void tick(lv_timer_t *t){(void)t;uint32_t ms=lv_tick_elaps(phaseAt);
   switch(phase){
@@ -396,26 +356,24 @@ void setup(){
   lv_obj_set_style_bg_color(scr,lv_color_hex(0x101A24),0);
   lv_obj_clear_flag(scr,LV_OBJ_FLAG_SCROLLABLE);
   drawMachine();
-  processPanel = rectangle(scr, 7, 171, 306, 165, 0x243441);
+  processPanel = rectangle(scr, 7, 171, 306, 300, 0x243441);
   lv_obj_set_style_radius(processPanel, 10, 0);
   lv_obj_set_style_border_width(processPanel, 2, 0);
   lv_obj_set_style_border_color(processPanel, lv_color_hex(0x5BC0EB), 0);
 
-  lv_obj_t *title = caption(processPanel, 5, 10, 296, "CURRENT BALER PROCESS");
+  lv_obj_t *title = caption(processPanel, 5, 20, 296, "CURRENT BALER PROCESS");
   lv_obj_set_style_text_color(title, lv_color_hex(0xAFC7D3), 0);
 
-  processLabel = caption(processPanel, 8, 44, 290, "");
-  instructionLabel = caption(processPanel, 8, 86, 290, "");
-  statusLabel = caption(processPanel, 8, 122, 290, "");
+  processLabel = caption(processPanel, 8, 74, 290, "");
+  instructionLabel = caption(processPanel, 8, 120, 290, "");
+  statusLabel = caption(processPanel, 8, 170, 290, "");
 
-  lv_obj_set_style_text_font(processLabel, LV_FONT_DEFAULT, 0);
-  lv_obj_set_style_text_font(instructionLabel, LV_FONT_DEFAULT, 0);
-  lv_obj_set_style_text_font(statusLabel, LV_FONT_DEFAULT, 0);
+  lv_obj_set_style_text_font(title, &lv_font_montserrat_18, 0);
+  lv_obj_set_style_text_font(processLabel, &lv_font_montserrat_18, 0);
+  lv_obj_set_style_text_font(instructionLabel, &lv_font_montserrat_18, 0);
+  lv_obj_set_style_text_font(statusLabel, &lv_font_montserrat_18, 0);
 
   lv_obj_set_style_text_color(statusLabel, lv_color_hex(0xD7E3EA), 0);
-  startBtn=button(7,347,146,"START\nCONVEYOR",eventStart,&startTxt);
-  doorBtn=button(166,347,147,"DOOR OPEN LIMIT\nSWITCH (SIMULATE)",eventDoor,NULL);
-  closedBtn=button(7,408,306,"DOOR CLOSED LIMIT SWITCH (SIMULATE)",eventClose,NULL);
   transition(READY);
   render();
   simTimer=lv_timer_create(tick,50,NULL);
